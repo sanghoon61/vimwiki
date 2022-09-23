@@ -193,13 +193,15 @@ endfunction
 
 
 function! VimwikiFoldText() abort
+  setlocal fillchars=fold:\ 
   let line = getline(v:foldstart)
   let main_text = substitute(line, '^\s*', repeat(' ',indent(v:foldstart)), '')
   let fold_len = v:foldend - v:foldstart + 1
   let len_text = ' ['.fold_len.'] '
+  let level_text = repeat('    ', v:foldlevel - 1)
   if line !~# vimwiki#vars#get_syntaxlocal('rxPreStart')
     let [main_text, spare_len] = s:shorten_text(main_text, 50)
-    return main_text.len_text
+    return level_text.main_text.len_text
   else
     " fold-text for code blocks: use one or two of the starting lines
     let [main_text, spare_len] = s:shorten_text(main_text, 24)
@@ -210,7 +212,7 @@ function! VimwikiFoldText() abort
       let [more_text, spare_len] = s:shorten_text(line2, spare_len+12)
       let content_text .= more_text
     endif
-    return main_text.len_text.content_text
+    return level_text.main_text.len_text.content_text
   endif
 endfunction
 
